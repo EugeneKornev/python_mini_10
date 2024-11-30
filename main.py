@@ -1,20 +1,24 @@
-def singleton(cls):
-    instances = {}
+class Singleton(type):
+    _instances = {}
 
-    def wrapper(*args, **kwargs):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-    return wrapper
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
 
-@singleton
-class Cat:
-    def __init__(self, color):  # :)
+class Cat(metaclass=Singleton):
+
+    def __init__(self, color):
         self.color = color
 
 
-my_cat = Cat('black')
-friends_cat = Cat('white')
-print(id(my_cat) == id(friends_cat))
+class Test(metaclass=Singleton):
+    global_field = 42
+
+
+black_cat = Cat("black")
+white_cat = Cat("white")
+assert black_cat is white_cat
+print(Test.global_field)
 
